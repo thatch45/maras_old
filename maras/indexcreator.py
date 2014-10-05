@@ -60,7 +60,7 @@ class Parser(object):
                               'MultiHashIndex': ['type', 'name', 'key_format', 'hash_lim', 'entry_line_format'],
                               'MultiTreeBasedIndex': ['type', 'name', 'key_format', 'node_capacity', 'pointer_format', 'meta_format']
                               }
-        self.funcs = {'md5': (['md5'], ['.digest()']),
+        self.funcs = {'sha1': (['sha1'], ['.digest()']),
                       'len': (['len'], []),
                       'str': (['str'], []),
                       'fix_r': (['self.fix_r'], []),
@@ -608,7 +608,7 @@ class Parser(object):
                         return True
                 return False
 
-            if t == token.NAME and len(self.funcs_stack) > 0 and self.funcs_stack[-1][0] == 'md5' and search_through_known_dicts(tk):
+            if t == token.NAME and len(self.funcs_stack) > 0 and self.funcs_stack[-1][0] == 'sha1' and search_through_known_dicts(tk):
                 raise IndexCreatorValueException("Second value returned by make_key_value for sure isn't a dictionary ", self.cnt_line_nr(line, 1))
 
         if tk == ')':
