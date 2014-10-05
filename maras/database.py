@@ -1,27 +1,53 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#
+# Copyright 2011-2013 Codernity (http://codernity.com)
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
-# Import python libs
 import os
 import io
-from random import randrange
-import warnings
 from inspect import getsource
 
-# Import maras libs
+# for custom indexes
+from maras.storage import Storage, IU_Storage
+from maras.hash_index import (IU_UniqueHashIndex,
+                                    IU_HashIndex,
+                                    HashIndex,
+                                    UniqueHashIndex)
+# normal imports
+
 from maras.index import (ElemNotFound,
-                         DocIdNotFound,
-                         IndexException,
-                         Index,
-                         TryReindexException,
-                         ReindexException,
-                         IndexNotFoundException,
-                         IndexConflict)
+                               DocIdNotFound,
+                               IndexException,
+                               Index,
+                               TryReindexException,
+                               ReindexException,
+                               IndexNotFoundException,
+                               IndexConflict)
+
 from maras.misc import NONE
 
+from maras.env import menv
 
-def header_for_indexes(index_name, index_class, db_custom='', ind_custom='', classes_code=''):
-    return '''# %s
-# {0}
+from random import randrange
+
+import warnings
+
+
+def header_for_indexes(index_name, index_class, db_custom="", ind_custom="", classes_code=""):
+    return """# %s
+# %s
 
 # inserted automatically
 import os
@@ -29,50 +55,51 @@ import msgpack
 
 import struct
 import shutil
+
 from hashlib import md5
 
 # custom db code start
 # db_custom
-{1}
+%s
 
 # custom index code start
 # ind_custom
-{2}
+%s
 
 # source of classes in index.classes_code
 # classes_code
-{3}
+%s
 
 # index code start
 
-'''.format(index_name, index_class, db_custom, ind_custom, classes_code)
+""" % (index_name, index_class, db_custom, ind_custom, classes_code)
 
 
-class MarasException(Exception):
+class DatabaseException(Exception):
     pass
 
 
-class PreconditionsException(MarasException):
+class PreconditionsException(DatabaseException):
     pass
 
 
-class RecordDeleted(MarasException):
+class RecordDeleted(DatabaseException):
     pass
 
 
-class RecordNotFound(MarasException):
+class RecordNotFound(DatabaseException):
     pass
 
 
-class RevConflict(MarasException):
+class RevConflict(DatabaseException):
     pass
 
 
-class DatabaseConflict(MarasException):
+class DatabaseConflict(DatabaseException):
     pass
 
 
-class DatabasePathException(MarasException):
+class DatabasePathException(DatabaseException):
     pass
 
 
@@ -81,12 +108,11 @@ class DatabaseIsNotOpened(PreconditionsException):
 
 
 class Database(object):
-    '''
-    The default reference implimentation of the database interface, this
-    interface
-    '''
-    # Allow for a custom header to be intereted
-    custom_header = ''
+    """
+    A default single thread database object.
+    """
+
+    custom_header = ""  # : use it for imports required by your database
 
     def __init__(self, path):
         self.path = path
@@ -97,10 +123,10 @@ class Database(object):
         self.opened = False
 
     def create_new_rev(self, old_rev=None):
-        '''
+        """
         Creates new revision number based on previous one.
         Increments it + random bytes. On overflow starts from 0 again.
-        '''
+        """
         if old_rev:
             try:
                 rev_num = int(old_rev[:4], 16)
@@ -111,34 +137,33 @@ class Database(object):
             # starting the counter from 0 again
                 rev_num = 0
             rnd = randrange(65536)
-            return '%04x%04x' % (rev_num, rnd)
+            return "%04x%04x" % (rev_num, rnd)
         else:
             # new rev
             rnd = randrange(256 ** 2)
             return '0001%04x' % rnd
 
     def __not_opened(self):
-        '''
-        Raise an exception if the database is not open
-        '''
         if not self.opened:
-            raise DatabaseIsNotOpened('Database is not opened')
+            raise DatabaseIsNotOpened("Database is not opened")
 
     def set_indexes(self, indexes=[]):
-        '''
-        Apply a list of indexes to the database
+        """
+        Set indexes using ``indexes`` param
+
         :param indexes: indexes to set in db
         :type indexes: iterable of :py:class:`maras.index.Index` objects.
-        '''
+
+        """
         for ind in indexes:
             self.add_index(ind, create=False)
 
     def _add_single_index(self, p, i, index):
-        '''
+        """
         Adds single index to a database.
         It will use :py:meth:`inspect.getsource` to get class source.
         Then it will build real index file, save it in ``_indexes`` directory.
-        '''
+        """
         code = getsource(index.__class__)
         if not code.startswith('c'):  # fix for indented index codes
             import textwrap
@@ -157,40 +182,36 @@ class Database(object):
             f.write(code)
         return True
 
-    def _read_index_single(self, path, ind, ind_kwargs={}):
-        '''
-        Read in a single index from the index code stored on disk in the
-        database directotry
+    def _read_index_single(self, p, ind, ind_kwargs={}):
+        """
+        It will read single index from index file (ie. generated in :py:meth:`._add_single_index`).
+        Then it will perform ``exec`` on that code
 
-        If the index cannot be loaded or instansiated then the index file is
-        returned with the ``_broken`` suffix
+        If error will occur the index file will be saved with ``_broken`` suffix
 
-        :param path path
-        :param ind: index name
+        :param p: path
+        :param ind: index name (will be joined with *p*)
         :returns: new index object
-        '''
-        with io.FileIO(os.path.join(path, ind), 'r') as f:
+        """
+        with io.FileIO(os.path.join(p, ind), 'r') as f:
             name = f.readline()[2:].strip()
             _class = f.readline()[2:].strip()
             code = f.read()
         try:
-            obj = compile(code, '<Index: %s' % os.path.join(path, ind), 'exec')
+            obj = compile(code, '<Index: %s' % os.path.join(p, ind), 'exec')
             exec obj in globals()
             ind_obj = globals()[_class](self.path, name, **ind_kwargs)
             ind_obj._order = int(ind[:2])
         except:
-            ind_path = os.path.join(path, ind)
+            ind_path = os.path.join(p, ind)
             os.rename(ind_path, ind_path + '_broken')  # rename it instead of removing
-            warnings.warn('Fatal error in index, saved as {0}{1}'.format(ind_path, '_broken'))
+#            os.unlink(os.path.join(p, ind))
+            warnings.warn("Fatal error in index, saved as %s" % (ind_path + '_broken', ))
             raise
         else:
             return ind_obj
 
     def __check_if_index_unique(self, name, num):
-        '''
-        Check if the index is unique, multiple indexes of the same name are
-        not supported
-        '''
         indexes = os.listdir(os.path.join(self.path, '_indexes'))
         if any((x for x in indexes if x[2:-3] == name and x[:2] != str(num))):
             raise IndexConflict("Already exists")
@@ -286,19 +307,16 @@ class Database(object):
         return ind_obj, name
 
     def add_index(self, new_index, create=True, ind_kwargs=None):
-        '''
-        Add a new index object to the database. The index must have a unique
-        name for the database.
+        """
 
-        :param new_index:
-            New index to add, can be an Index object or an index
-            valid string or path to file with index code
+        :param new_index: New index to add, can be Index object, index valid string or path to file with index code
         :type new_index: string
-        :param create: Create the index after addition
+        :param create: Create the index after add or not
         :type create: bool
 
         :returns: new index name
-        '''
+        """
+
         if ind_kwargs is None:
             ind_kwargs = {}
         p = os.path.join(self.path, '_indexes')
@@ -325,17 +343,14 @@ class Database(object):
         return name
 
     def edit_index(self, index, reindex=False, ind_kwargs=None):
-        '''
-        Pass in an index object to edit the in place index, this allows for
-        an index to be modified inline with the database operation. The new
-        index ``reindex_index`` method will be executed to migrate the index
-        if `reindex` is set to True.
-        The previous working index will be saved with the `_last` suffix.
+        """
+        Allows to edit existing index.
+        Previous working version will be saved with ``_last`` suffix (see :py:meth:`.revert_index`
 
-        :param bool reindex: Execute the reindex_index method
+        :param bool reindex: should be the index reindexed after change
 
         :returns: index name
-        '''
+        """
         if ind_kwargs is None:
             ind_kwargs = {}
         ind_obj, name = self.__write_index(index, -1, edit=True)
@@ -350,11 +365,12 @@ class Database(object):
         return name
 
     def revert_index(self, index_name, reindex=False, ind_kwargs=None):
-        '''
-        Attempt to revert index code to the previous running index.
+        """
+        Tries to revert index code from copy.
+        It calls :py:meth:`.edit_index` with previous working.
 
         :param string index_name: index name to restore
-        '''
+        """
         ind_path = os.path.join(self.path, '_indexes')
         if index_name in self.indexes_names:  # then it's working index.
             ind = self.indexes_names[index_name]
@@ -363,25 +379,26 @@ class Database(object):
             indexes = os.listdir(ind_path)
             full_name = next((x for x in indexes if x[2:-3] == index_name))
         if not full_name:
-            raise MarasException('Index not found: {0}'.format(index_name))
+            raise DatabaseException("%s index not found" % index_name)
         last_path = os.path.join(ind_path, full_name + "_last")
         if not os.path.exists(last_path):
-            raise MarasException('No previous copy found for {0}'.format(index_name))
+            raise DatabaseException("No previous copy found for %s" % index_name)
         correct_last_path = last_path[:-5]  # remove _last from name
         os.rename(last_path, correct_last_path)
+#        ind_data = open(last_path, 'r')
         p = 'path:%s' % os.path.split(correct_last_path)[1]
         return self.edit_index(p, reindex, ind_kwargs)
 
     def get_index_code(self, index_name, code_switch='All'):
-        '''
-        Return the index code from the named index
+        """
+        It will return full index code from index file.
 
-        :param index_name: the name of index
-        '''
+        :param index_name: the name of index to look for code
+        """
         if not index_name in self.indexes_names:
             self.__not_opened()
             raise IndexNotFoundException(
-                'Index `{0}` doesn\'t exist'.format(index_name))
+                "Index `%s` doesn't exists" % index_name)
         ind = self.indexes_names[index_name]
         name = "%.2d%s" % (ind._order, index_name)
         name += '.py'
@@ -389,6 +406,7 @@ class Database(object):
             co = f.read()
             if code_switch == 'All':
                 return co
+
             if code_switch == 'S':
                 try:
                     ind = co.index('#SIMPLIFIED CODE')
@@ -407,7 +425,7 @@ class Database(object):
                 else:
                     return co[:ind]
 
-        return ''  # shouldn't happen
+        return ""  # shouldn't happen
 
     def __set_main_storage(self):
         """
@@ -1192,4 +1210,5 @@ you should check index code.""" % (index.name, ex), RuntimeWarning)
         props['path'] = self.path
         props['size'] = self.__get_size()
         props['indexes'] = self.indexes_names.keys()
+        props['menv'] = menv
         return props
