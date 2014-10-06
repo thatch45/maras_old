@@ -2037,7 +2037,7 @@ class IU_MultiTreeBasedIndex(IU_TreeBasedIndex):
 
 
 class TreeBasedIndex(IU_TreeBasedIndex):
-    pass
+    custom_header = 'from maras.tree_index import TreeBasedIndex, IU_TreeBasedIndex'
 
 
 class MultiTreeBasedIndex(IU_MultiTreeBasedIndex):
