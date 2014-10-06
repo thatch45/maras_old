@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Create a stock database with a built in nesting key index
 '''
