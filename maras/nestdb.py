@@ -44,7 +44,9 @@ class NestIndex(maras.tree_index.TreeBasedIndex):
         maras.tree_index.TreeBasedIndex.__init__(self, *args, **kwargs)
 
     def make_key_value(self, data):
-        return data.get('_key', 'None')
+        if '_key' in data:
+            return data.pop('_key')
+        return 'None'
 
     def make_key(self, key):
         return key
