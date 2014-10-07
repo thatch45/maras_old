@@ -15,20 +15,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-from maras.index import (Index,
-                               IndexException,
-                               DocIdNotFound,
-                               ElemNotFound,
-                               TryReindexException,
-                               IndexPreconditionsException)
-
+# Import python libs
 import os
 import msgpack
 import io
 import struct
 import shutil
 
+# Import maras libs
+from maras.index import (Index,
+                         IndexException,
+                         DocIdNotFound,
+                         ElemNotFound,
+                         TryReindexException,
+                         IndexPreconditionsException)
 from maras.storage import IU_Storage, DummyStorage
 from maras.env import menv
 if menv.get('rlock_obj'):
@@ -38,16 +38,16 @@ from maras.rr_cache import cache1lvl
 from maras.misc import random_hex_32
 
 
-
 class IU_HashIndex(Index):
-    """
-    That class is for Internal Use only, if you want to use HashIndex just subclass the :py:class:`HashIndex` instead this one.
+    '''
+    This class is for Internal Use only, if you want to use HashIndex just
+    subclass the :py:class:`HashIndex` instead this one.
 
-    That design is because main index logic should be always in database not in custom user indexes.
-    """
-
+    That design is because main index logic should be always in database
+    not in custom user indexes.
+    '''
     def __init__(self, db_path, name, entry_line_format='<32s{key}IIcI', hash_lim=0xfffff, storage_class=None, key_format='c'):
-        """
+        '''
         The index is capable to solve conflicts by `Separate chaining`
         :param db_path: database path
         :type db_path: string
@@ -60,7 +60,7 @@ class IU_HashIndex(Index):
         :param storage_class: Storage class by default it will open standard :py:class:`maras.storage.Storage` (if string has to be accesible by globals()[storage_class])
         :type storage_class: class name which will be instance of maras.storage.Storage instance or None
         :param key_format: a index key format
-        """
+        '''
         if key_format and '{key}' in entry_line_format:
             entry_line_format = entry_line_format.replace('{key}', key_format)
         super(IU_HashIndex, self).__init__(db_path, name)
