@@ -15,17 +15,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+# Import python libs
 import os
-import msgpack
+import io
 
+# Import maras libs
 try:
     from maras import __version__
 except ImportError:
     from __init__ import __version__
 
-
-import io
+# Import third party libs
+import msgpack
 
 
 class IndexException(Exception):
@@ -64,7 +65,7 @@ class Index(object):
 
     __version__ = __version__
 
-    custom_header = ""  # : use it for imports required by your index
+    custom_header = ''  # : use it for imports required by your index
 
     def __init__(self,
                  db_path,
