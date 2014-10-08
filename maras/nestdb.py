@@ -124,15 +124,22 @@ class HighDB(object):
         '''
         root, base = key_comps(key, self.delim)
         try:
-            current = self.sym.get(self.index_name, root)
+            current = self.sym.get(self.index_name, root, True)
         except Exception:
             current = {'files': []}
         files = current.get('files')
         files.append(base)
-        if key not in current.get('files'):
-            data = {'__key': root,
-                    'files': files}
-            self.sym.update(data)
+        data = {'__key': root,
+                'files': files}
+        if '_rev' in current:
+            data['_rev'] = current['_rev']
+        if '_id' in current:
+            data['_id'] = current['_rev']
+        if base not in current.get('files'):
+            if '_rev' in data and '_id' in data:
+                self.sym.update(data)
+            else:
+                self.sym.insert(data)
 
     def insert(self, key, data):
         '''
