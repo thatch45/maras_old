@@ -127,7 +127,6 @@ class HighDB(object):
             current = self.sym.get(self.index_name, root)
         except Exception:
             current = {'files': []}
-        print current
         files = current.get('files')
         files.append(base)
         if key not in current.get('files'):

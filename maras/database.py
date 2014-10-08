@@ -697,8 +697,6 @@ you should check index code.""" % (index.name, ex), RuntimeWarning)
             should_index = None
         if should_index:
             key, value = should_index
-            print key
-            print value
             index.insert_with_storage(doc_id, key, value)
             # if value:
             #     storage = index.storage
