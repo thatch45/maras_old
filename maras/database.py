@@ -20,6 +20,7 @@ import io
 from inspect import getsource
 
 # for custom indexes
+import maras
 from maras.storage import Storage, IU_Storage
 from maras.hash_index import (IU_UniqueHashIndex,
                                     IU_HashIndex,
@@ -696,6 +697,8 @@ you should check index code.""" % (index.name, ex), RuntimeWarning)
             should_index = None
         if should_index:
             key, value = should_index
+            print key
+            print value
             index.insert_with_storage(doc_id, key, value)
             # if value:
             #     storage = index.storage

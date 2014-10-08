@@ -7,11 +7,13 @@ import os
 import hashlib
 
 # Import maras libs
+import maras
 import maras.database
 import maras.database_safe_shared
 import maras.database_super_thread_safe
 import maras.database_thread_safe
 import maras.hash_index
+import maras.tree_index
 
 
 def key_comps(key, delim='/'):
@@ -30,6 +32,32 @@ def get_plain_db(path):
     '''
     return maras.dtabase.Database(path)
 
+class DBGen(object):
+    def get_plain_db(self, path):
+        '''
+        return a plain database
+        '''
+        return maras.database.Database(path)
+
+    def get_safe_shared_db(self, path):
+        '''
+        return a safe shared db
+        '''
+        return maras.safe_shared_database.Database(path)
+
+    def get_thread_db(self, path):
+        '''
+        return a thread safe db
+        '''
+        return maras.database.thread_safe.Database(path)
+
+    def get_super_thread_db(self, path):
+        '''
+        Return a super thread safe db
+        '''
+        return maras.database_super_thread_safe.Database(path)
+
+
 
 class HighDB(object):
     '''
@@ -43,52 +71,31 @@ class HighDB(object):
         self.db_path = os.path.join(path, 'db')
         self.sym_path = os.path.join(path, 'sym')
         if not os.path.exists(self.root_path):
-            os.makedirs(self.root_dir)
+            os.makedirs(self.root_path)
         self.delim = delim
+        self.dbgen = DBGen()
         self.index_name = index_name
-        self.db = getattr(self, '__get_{0}_db'.format(db_type))(self.root_path)
-        self.sym = getattr(self, '__get_{0}_db'.format(db_type))(self.sym_path)
+        self.db = getattr(self.dbgen, 'get_{0}_db'.format(db_type))(self.root_path)
+        self.sym = getattr(self.dbgen, 'get_{0}_db'.format(db_type))(self.sym_path)
         self.__open_db('db')
         self.__open_db('sym')
-
-    def __get_plain_db(self, path):
-        '''
-        return a plain database
-        '''
-        return maras.database.Database(path)
-
-    def __get_safe_shared_db(self, path):
-        '''
-        return a safe shared db
-        '''
-        return maras.safe_shared_database.Database(path)
-
-    def __get_thread_db(self, path):
-        '''
-        return a thread safe db
-        '''
-        return maras.database.thread_safe.Database(path)
-
-    def __get_super_thread_db(self, path):
-        '''
-        Return a super thread safe db
-        '''
-        return maras.database_super_thread_safe.Database(path)
 
     def __open_db(self, form):
         '''
         If the db does not exist, create it, otherwise open it
         '''
         db_obj = getattr(self, form)
-        try:
+        if db_obj.exists():
+            if db_obj.opened:
+                return
             db_obj.open()
-        except maras.database.DatabasePathException:
+        else:
             db_obj.create()
-            if form == 'db':
-                ind = Sha2TreeIndex(self.db.path, self.index_name)
-            else:
-                ind = Sha2HashIndex(self.db.path, self.index_name)
-            db_obj.add_index(ind)
+        if form == 'db':
+            ind = Sha2TreeIndex(self.db.path, self.index_name)
+        else:
+            ind = Sha2HashIndex(self.db.path, self.index_name)
+        db_obj.add_index(ind)
 
     def close(self):
         '''
@@ -116,7 +123,11 @@ class HighDB(object):
         Write the key relational data into the sym db
         '''
         root, base = key_comps(key, self.delim)
-        current = self.sym.get(root)
+        try:
+            current = self.sym.get(self.index_name, root)
+        except Exception:
+            current = {'files': []}
+        print current
         files = current.get('files')
         files.append(base)
         if key not in current.get('files'):
@@ -132,7 +143,7 @@ class HighDB(object):
         data['__key'] = key
         return self.db.insert(data)
 
-    def get(self, key, with_doc=False, with_storage=False):
+    def get(self, key, with_doc=False, with_storage=True):
         '''
         Get a single chunk of data from the db from the given key
         '''
@@ -152,6 +163,7 @@ class HighDB(object):
         get lots of data - this needs better docstring!!
         '''
         return self.db.get_many(
+                self.index_name,
                 key,
                 limit,
                 offset,
@@ -160,8 +172,6 @@ class HighDB(object):
                 start,
                 end,
                 **kwargs)
-
-
 
 # We can likely build these out as mixins, making it easy to apply high level
 # constructs to multiple unerlying database implimentations
@@ -292,7 +302,8 @@ class Sha2TreeIndex(maras.tree_index.TreeBasedIndex):
 
     def make_key_value(self, data):
         if '__key' in data:
-            return hashlib.sha256(data.pop('__key')).digest()
+            key = hashlib.sha256(data.pop('__key')).digest()
+            return key, data
         return 'None'
 
     def make_key(self, key):
@@ -306,11 +317,12 @@ class Sha2HashIndex(maras.hash_index.HashIndex):
     custom_header = 'import hashlib'
     def __init__(self, *args, **kwargs):
         kwargs['key_format'] = '32s'
-        maras.tree_index.TreeBasedIndex.__init__(self, *args, **kwargs)
+        maras.hash_index.HashIndex.__init__(self, *args, **kwargs)
 
     def make_key_value(self, data):
         if '__key' in data:
-            return hashlib.sha256(data.pop('__key')).digest()
+            key = hashlib.sha256(data.pop('__key')).digest()
+            return key, data
         return 'None'
 
     def make_key(self, key):
