@@ -46,7 +46,14 @@ class IU_HashIndex(Index):
     That design is because main index logic should be always in database
     not in custom user indexes.
     '''
-    def __init__(self, db_path, name, entry_line_format='<32s{key}IIcI', hash_lim=0xfffff, storage_class=None, key_format='c'):
+    def __init__(
+            self,
+            db_path,
+            name,
+            entry_line_format='<32s{key}IIcI',
+            hash_lim=0xfffff,
+            storage_class=None,
+            key_format='c'):
         '''
         The index is capable to solve conflicts by `Separate chaining`
         :param db_path: database path
@@ -72,7 +79,7 @@ class IU_HashIndex(Index):
         self.storage_class = storage_class
         self.storage = None
 
-        self.bucket_line_format = "<I"
+        self.bucket_line_format = '<I'
         self.bucket_line_size = struct.calcsize(self.bucket_line_format)
         self.entry_line_format = entry_line_format
         self.entry_line_size = struct.calcsize(self.entry_line_format)
@@ -96,16 +103,16 @@ class IU_HashIndex(Index):
 
     def open_index(self):
         if not os.path.isfile(os.path.join(self.db_path, self.name + '_buck')):
-            raise IndexException("Doesn't exists")
+            raise IndexException('Doesn\'t exists')
         self.buckets = io.open(
-            os.path.join(self.db_path, self.name + "_buck"), 'r+b', buffering=0)
+            os.path.join(self.db_path, self.name + '_buck'), 'r+b', buffering=0)
         self._fix_params()
         self._open_storage()
 
     def create_index(self):
         if os.path.isfile(os.path.join(self.db_path, self.name + '_buck')):
             raise IndexException('Already exists')
-        with io.open(os.path.join(self.db_path, self.name + "_buck"), 'w+b') as f:
+        with io.open(os.path.join(self.db_path, self.name + '_buck'), 'w+b') as f:
             props = dict(name=self.name,
                          bucket_line_format=self.bucket_line_format,
                          entry_line_format=self.entry_line_format,
@@ -114,7 +121,7 @@ class IU_HashIndex(Index):
                          storage_class=self.storage_class)
             f.write(msgpack.dumps(props))
         self.buckets = io.open(
-            os.path.join(self.db_path, self.name + "_buck"), 'r+b', buffering=0)
+            os.path.join(self.db_path, self.name + '_buck'), 'r+b', buffering=0)
         self._create_storage()
 
     def destroy(self):
@@ -139,11 +146,11 @@ class IU_HashIndex(Index):
     #     self.storage.close()
 #    @lfu_cache(100)
     def _find_key(self, key):
-        """
+        '''
         Find the key position
 
         :param key: the key to find
-        """
+        '''
         start_position = self._calculate_position(key)
         self.buckets.seek(start_position)
         curr_data = self.buckets.read(self.bucket_line_size)
