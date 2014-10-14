@@ -98,27 +98,6 @@ class HighDB(object):
                 ind = Sha2HashIndex(self.db.path, self.index_name)
             db_obj.add_index(ind)
 
-    def close(self):
-        '''
-        Close the database
-        '''
-        if self.db.opened:
-            self.db.close()
-        if self.sym.opened:
-            self.sym.close()
-        return True
-
-    def destroy(self):
-        '''
-        Destroy the database!
-        This ain't no Xen destroy, this deletes all the data!!
-        '''
-        if self.db.exists():
-            self.db.destroy()
-        if self.sym.exists():
-            self.sym.destroy()
-        return True
-
     def _update_sym(self, key):
         '''
         Write the key relational data into the sym db
@@ -141,6 +120,27 @@ class HighDB(object):
                 self.sym.update(data)
             else:
                 self.sym.insert(data)
+
+    def close(self):
+        '''
+        Close the database
+        '''
+        if self.db.opened:
+            self.db.close()
+        if self.sym.opened:
+            self.sym.close()
+        return True
+
+    def destroy(self):
+        '''
+        Destroy the database!
+        This ain't no Xen destroy, this deletes all the data!!
+        '''
+        if self.db.exists():
+            self.db.destroy()
+        if self.sym.exists():
+            self.sym.destroy()
+        return True
 
     def insert(self, key, data):
         '''
