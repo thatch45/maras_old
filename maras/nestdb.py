@@ -91,11 +91,12 @@ class HighDB(object):
             db_obj.open()
         else:
             db_obj.create()
-        if form == 'db':
-            ind = Sha2TreeIndex(self.db.path, self.index_name)
-        else:
-            ind = Sha2HashIndex(self.db.path, self.index_name)
-        db_obj.add_index(ind)
+        if self.index_name not in db_obj.indexes_names:
+            if form == 'db':
+                ind = Sha2TreeIndex(self.db.path, self.index_name)
+            else:
+                ind = Sha2HashIndex(self.db.path, self.index_name)
+            db_obj.add_index(ind)
 
     def close(self):
         '''
