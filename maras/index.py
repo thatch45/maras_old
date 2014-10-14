@@ -94,16 +94,22 @@ class Index(object):
     def create_index(self):
         raise NotImplementedError()
 
-    def _fix_params(self):
+    def _get_props(self):
         self.buckets.seek(0)
-        props = msgpack.loads(self.buckets.read(self._start_ind))
+        raw_ind = self.buckets.read(self._start_ind)
+        pivot = raw_ind.find('\x00')
+        while raw_ind[pivot:] != '\x00' * (self._start_ind - pivot):
+            pivot += 1
+        return msgpack.loads(raw_ind[:pivot])
+
+    def _fix_params(self):
+        props = self._get_props()
         for k, v in props.iteritems():
             self.__dict__[k] = v
         self.buckets.seek(0, 2)
 
     def _save_params(self, in_params={}):
-        self.buckets.seek(0)
-        props = msgpack.loads(self.buckets.read(self._start_ind))
+        props = self._get_props()
         props.update(in_params)
         self.buckets.seek(0)
         data = msgpack.dumps(props)
