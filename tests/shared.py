@@ -30,7 +30,7 @@ from maras import rr_cache
 import pytest
 import os
 import random
-from hashlib import md5
+from hashlib import sha1
 
 try:
     from collections import Counter
@@ -63,19 +63,19 @@ class CustomHashIndex(HashIndex):
         return key
 
 
-class Md5Index(HashIndex):
+class sha1Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
         # kwargs['entry_line_format'] = '<32s32sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
-        super(Md5Index, self).__init__(*args, **kwargs)
+        super(sha1Index, self).__init__(*args, **kwargs)
 
     def make_key_value(self, data):
-        return md5(data['name']).digest(), None
+        return sha1(data['name']).digest(), None
 
     def make_key(self, key):
-        return md5(key).digest()
+        return sha1(key).digest()
 
 
 class WithAIndex2(HashIndex):
@@ -91,13 +91,13 @@ class WithAIndex2(HashIndex):
         if a_val is not None:
             if not isinstance(a_val, basestring):
                 a_val = str(a_val)
-                return md5(a_val).digest(), None
+                return sha1(a_val).digest(), None
                 return None
 
     def make_key(self, key):
         if not isinstance(key, basestring):
             key = str(key)
-            return md5(key).digest()
+            return sha1(key).digest()
 
 
 class WithAIndex(HashIndex):
@@ -113,13 +113,13 @@ class WithAIndex(HashIndex):
         if a_val is not None:
             if not isinstance(a_val, basestring):
                 a_val = str(a_val)
-            return md5(a_val).digest(), None
+            return sha1(a_val).digest(), None
         return None
 
     def make_key(self, key):
         if not isinstance(key, basestring):
             key = str(key)
-        return md5(key).digest()
+        return sha1(key).digest()
 
 
 class Simple_TreeIndex(TreeBasedIndex):
@@ -436,7 +436,7 @@ class DB_Tests:
         new_index = UniqueHashIndex(db.path, 'unique_hash_index')
         db.add_index(new_index)
 
-        new_index = Md5Index(db.path, 'md5_index')
+        new_index = sha1Index(db.path, 'sha1_index')
         db.add_index(new_index)
 
         new_index = WithAIndex(db.path, 'with_a_index')
@@ -452,7 +452,7 @@ class DB_Tests:
         new_index = HashIndex(db.path, 'hash_index')
         db.add_index(new_index)
 
-        new_index = Md5Index(db.path, 'md5_index')
+        new_index = sha1Index(db.path, 'sha1_index')
         db.add_index(new_index)
 
         new_index = WithAIndex(db.path, 'withA_index')
@@ -461,7 +461,7 @@ class DB_Tests:
         for y in range(100):
             db.insert(dict(y=y))
 
-        for index in ('id', 'hash_index', 'md5_index', 'withA_index'):
+        for index in ('id', 'hash_index', 'sha1_index', 'withA_index'):
             elements = db.all('hash_index')
             assert len(list(elements)) == 100
 
@@ -483,7 +483,7 @@ class DB_Tests:
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.set_indexes([UniqueHashIndex(db.path, 'id')])
         db.create()
-        file_names = ('tests/index_files/03md5_index.py',
+        file_names = ('tests/index_files/03sha1_index.py',
                       'tests/index_files/04withA_index.py',
                       'tests/index_files/05custom_hash_index.py')
 
@@ -506,7 +506,7 @@ class DB_Tests:
 
         before = set(os.listdir(path_indexes))
 
-        new_index = Md5Index(db.path, 'md5_index')
+        new_index = sha1Index(db.path, 'sha1_index')
         db.add_index(new_index)
 
         after = set(os.listdir(path_indexes))
@@ -526,7 +526,7 @@ class DB_Tests:
             return [f for f in os.listdir(path_indexes) if name in f]
 
         indexes = [klass(db.path, klass.__name__) for klass in (
-            HashIndex, WithAIndex, Md5Index)]
+            HashIndex, WithAIndex, sha1Index)]
 
 #        with name
         for index in indexes:
@@ -543,7 +543,7 @@ class DB_Tests:
                 db.get_index_details(index_name)
 #        with instance
         indexes = [klass(db.path, klass.__name__) for klass in (
-            HashIndex, WithAIndex, Md5Index)]
+            HashIndex, WithAIndex, sha1Index)]
         for index in indexes:
             index_name = index.name
             db.add_index(index)
@@ -559,7 +559,7 @@ class DB_Tests:
 
 #        with other instance
         indexes = [klass(db.path, klass.__name__) for klass in (
-            HashIndex, WithAIndex, Md5Index)]
+            HashIndex, WithAIndex, sha1Index)]
         for index in indexes:
             index_name = index.name
             db.add_index(index)
@@ -586,7 +586,7 @@ class DB_Tests:
         def file_exists_in_indexes_dir(name):
             return [f for f in os.listdir(path_indexes) if name in f]
 
-        file_names = ('tests/index_files/03md5_index.py',
+        file_names = ('tests/index_files/03sha1_index.py',
                       'tests/index_files/04withA_index.py',
                       'tests/index_files/05custom_hash_index.py')
 
@@ -615,7 +615,7 @@ class DB_Tests:
         with pytest.raises(IndexNotFoundException):
                 db.get_index_details(hash_index.name)
 
-        new_index = Md5Index(db.path, 'my_index')
+        new_index = sha1Index(db.path, 'my_index')
         db.add_index(new_index)
         assert db.get_index_details(new_index.name)
 
@@ -942,7 +942,7 @@ class DB_Tests:
     def test_get_error(self, tmpdir):
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.create()
-        _id = md5('test').hexdigest()
+        _id = sha1('test').hexdigest()
         with pytest.raises(RecordNotFound):
             db.get('id', _id)
         db.insert(dict(_id=_id, test='test'))
@@ -1002,23 +1002,23 @@ class DB_Tests:
             db.get('words', "Codern")
 
     def test_add_indented_index(self, tmpdir):
-        class IndentedMd5Index(HashIndex):
+        class Indentedsha1Index(HashIndex):
 
             def __init__(self, *args, **kwargs):
                 # kwargs['entry_line_format'] = '<32s32sIIcI'
                 kwargs['key_format'] = '16s'
                 kwargs['hash_lim'] = 4 * 1024
-                super(IndentedMd5Index, self).__init__(*args, **kwargs)
+                super(Indentedsha1Index, self).__init__(*args, **kwargs)
 
             def make_key_value(self, data):
-                return md5(data['name']).digest(), None
+                return sha1(data['name']).digest(), None
 
             def make_key(self, key):
-                return md5(key).digest()
+                return sha1(key).digest()
 
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.create()
-        db.add_index(IndentedMd5Index(db.path, 'ind'))
+        db.add_index(Indentedsha1Index(db.path, 'ind'))
 
         db.insert(dict(name='a'))
         assert db.get('ind', 'a', with_doc=True)['doc']['name'] == 'a'

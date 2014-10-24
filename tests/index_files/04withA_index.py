@@ -8,7 +8,7 @@ import msgpack
 import struct
 import shutil
 
-from hashlib import md5
+from hashlib import sha1
 
 # custom db code start
 
@@ -28,10 +28,10 @@ class WithAIndex(HashIndex):
         if a_val:
             if not isinstance(a_val, basestring):
                 a_val = str(a_val)
-            return md5(a_val).hexdigest(), {}
+            return sha1(a_val).hexdigest(), {}
         return None
 
     def make_key(self, key):
         if not isinstance(key, basestring):
             key = str(key)
-        return md5(key).hexdigest()
+        return sha1(key).hexdigest()

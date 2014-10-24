@@ -23,7 +23,7 @@ from maras.tree_index import TreeBasedIndex
 from maras.tree_index import MultiTreeBasedIndex
 from maras.hash_index import MultiHashIndex
 from itertools import izip
-from hashlib import md5
+from hashlib import sha1
 from py.test import raises
 import os
 import uuid

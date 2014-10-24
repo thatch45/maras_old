@@ -27,7 +27,7 @@ from maras import rr_cache
 import pytest
 import os
 import random
-from hashlib import md5
+from hashlib import sha1
 
 try:
     from collections import Counter
@@ -59,18 +59,18 @@ class CustomHashIndex(HashIndex):
         return key
 
 
-class Md5Index(HashIndex):
+class sha1Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
-        super(Md5Index, self).__init__(*args, **kwargs)
+        super(sha1Index, self).__init__(*args, **kwargs)
 
     def make_key_value(self, data):
-        return md5(data['name']).digest(), {}
+        return sha1(data['name']).digest(), {}
 
     def make_key(self, key):
-        return md5(key).digest()
+        return sha1(key).digest()
 
 
 class WithAIndex(HashIndex):
@@ -85,13 +85,13 @@ class WithAIndex(HashIndex):
         if a_val:
             if not isinstance(a_val, basestring):
                 a_val = str(a_val)
-            return md5(a_val).digest(), {}
+            return sha1(a_val).digest(), {}
         return None
 
     def make_key(self, key):
         if not isinstance(key, basestring):
             key = str(key)
-        return md5(key).digest()
+        return sha1(key).digest()
 
 
 class HashIndexTests:
@@ -405,15 +405,15 @@ class HashIndexTests:
     def test_similar(self, tmpdir):
         db = self._db(os.path.join(str(tmpdir), 'db'))
         db.set_indexes(
-            [UniqueHashIndex(db.path, 'id'), Md5Index(db.path, 'md5')])
+            [UniqueHashIndex(db.path, 'id'), sha1Index(db.path, 'sha1')])
         db.create()
 
         a = dict(name='pigmej')
         db.insert(a)
-        db.get('md5', 'pigmej')
+        db.get('sha1', 'pigmej')
 
         with pytest.raises(RecordNotFound):
-            db.get("md5", 'pigme')
+            db.get("sha1", 'pigme')
 
     def test_custom_index(self, tmpdir):
 

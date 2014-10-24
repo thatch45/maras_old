@@ -27,7 +27,7 @@ from maras.tree_index import TreeBasedIndex
 from maras.tree_index import MultiTreeBasedIndex
 from maras.hash_index import MultiHashIndex
 from itertools import izip
-from hashlib import md5
+from hashlib import sha1
 from py.test import raises
 import os
 import uuid
@@ -85,9 +85,9 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a),{'a':a}
+        sha1(a),{'a':a}
         make_key:
-        md5(a)"""
+        sha1(a)"""
 
         s2 = """
         name = s
@@ -95,7 +95,7 @@ class TestIndexCreatorRightInput:
         key_format =     I
         hash_lim = 1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
         a,{'a':a}
         """
@@ -105,7 +105,7 @@ class TestIndexCreatorRightInput:
         key_format =     I
         hash_lim = 1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
         a,a"""
 
@@ -115,41 +115,41 @@ class TestIndexCreatorRightInput:
         key_format =     I
         hash_lim = 1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
-        md5(b),a"""
+        sha1(b),a"""
 
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), {'a': 'a'})),
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), {'a': 'a'})),
                            ({'a': 'qwerty'}, (
-                            md5('qwerty').digest(), {'a': 'qwerty'}))
+                            sha1('qwerty').digest(), {'a': 'qwerty'}))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
         simple_compare(s2, [({'a': 'a'}, ('a', {'a': 'a'})),
                             ({'a': 'qwerty'}, ('qwerty', {'a': 'qwerty'}))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
         simple_compare(s3, [({'a': 'a', 'b': 'b'}, ('a', 'a')),
                             ({'a': 'qwerty', 'b': 'b'}, ('qwerty', 'qwerty'))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
-        simple_compare(s4, [({'a': 'a', 'b': 'b'}, (md5('b').digest(), 'a')),
+        simple_compare(s4, [({'a': 'a', 'b': 'b'}, (sha1('b').digest(), 'a')),
                             ({'a': 'qwerty', 'b':
-                              'b'}, (md5('b').digest(), 'qwerty'))
+                              'b'}, (sha1('b').digest(), 'qwerty'))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
     def test_name_or_type_as_string(self):
@@ -160,9 +160,9 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
-        md5(a)"""
+        sha1(a)"""
 
         s2 = """
         name = \"\"\"s\"\"\"
@@ -170,24 +170,24 @@ class TestIndexCreatorRightInput:
         key_format =     I
         hash_lim = 1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
-        md5(a),None
+        sha1(a),None
         """
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), None)),
-                           ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), None)),
+                           ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
-        simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
-                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s2, [({'a': 'a'}, (sha1('a').digest(), None)),
+                            ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, (md5('e').digest())),
-                       ({'a': 'qwerty'}, (md5('qwerty').digest()))
+                       ({'a': 'e'}, (sha1('e').digest())),
+                       ({'a': 'qwerty'}, (sha1('qwerty').digest()))
                        ])
 
     def test_fliped_definitions(self):
@@ -198,9 +198,9 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
-        md5(a)"""
+        sha1(a)"""
 
         s2 = """
         name = s
@@ -208,24 +208,24 @@ class TestIndexCreatorRightInput:
         key_format =     I
         hash_lim = 1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
-        md5(a),None
+        sha1(a),None
         """
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), None)),
-                           ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), None)),
+                           ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
-        simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
-                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s2, [({'a': 'a'}, (sha1('a').digest(), None)),
+                            ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
     def test_None_equivalents(self):
@@ -255,9 +255,9 @@ class TestIndexCreatorRightInput:
         hash_lim : 1
 
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
-        md5(a)"""
+        sha1(a)"""
 
         s2 = """
         name:s
@@ -265,23 +265,23 @@ class TestIndexCreatorRightInput:
         key_format:'I'
         hash_lim:1
         make_key:
-        md5(a)
+        sha1(a)
         make_key_value:
-        md5(a),None
+        sha1(a),None
         """
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), None)),
-                           ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), None)),
+                           ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                            ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
-        simple_compare(s2, [({'a': 'a'}, (md5('a').digest(), None)),
-                            ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s2, [({'a': 'a'}, (sha1('a').digest(), None)),
+                            ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                             ],
                        [
-                       ({'a': 'e'}, md5('e').digest()),
-                       ({'a': 'qwerty'}, md5('qwerty').digest())
+                       ({'a': 'e'}, sha1('e').digest()),
+                       ({'a': 'qwerty'}, sha1('qwerty').digest())
                        ])
 
     def test_automatic_generated_class_name(self, p):
@@ -292,7 +292,7 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
         a"""
 
@@ -301,14 +301,14 @@ class TestIndexCreatorRightInput:
         assert rs[0] == "# s"
         assert rs[1][2:] == rs[2][6:39]
 
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), None)),
-                           ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), None)),
+                           ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                            ],
                        [
                        ({'a': 'e'}, 'e')
                        ])
 
-    def test_md5(self):
+    def test_sha1(self):
         s = """
         name = s
         type = HashIndex
@@ -316,17 +316,17 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
-        a != 'e' : md5(a)
+        a != 'e' : sha1(a)
         a"""
 
-        simple_compare(s, [({'a': 'a'}, (md5('a').digest(), None)),
-                           ({'a': 'qwerty'}, (md5('qwerty').digest(), None))
+        simple_compare(s, [({'a': 'a'}, (sha1('a').digest(), None)),
+                           ({'a': 'qwerty'}, (sha1('qwerty').digest(), None))
                            ],
                        [
                        ({'a': 'e'}, 'e'),
-                       ({'a': 'eeee'}, md5('eeee').digest())
+                       ({'a': 'eeee'}, sha1('eeee').digest())
                        ])
 
         s2 = """
@@ -336,18 +336,18 @@ class TestIndexCreatorRightInput:
         hash_lim = 1
 
         make_key_value:
-        md5(a+'aaa')+'a',None
+        sha1(a+'aaa')+'a',None
         make_key:
-        a != 'e' : md5(a)+a
+        a != 'e' : sha1(a)+a
         a"""
 
-        simple_compare(s2, [({'a': 'a'}, (md5('aaaa').digest() + 'a', None)),
+        simple_compare(s2, [({'a': 'a'}, (sha1('aaaa').digest() + 'a', None)),
                             ({'a': 'qwerty'}, (
-                             md5('qwertyaaa').digest() + 'a', None))
+                             sha1('qwertyaaa').digest() + 'a', None))
                             ],
                        [
                        ({'a': 'e'}, 'e'),
-                       ({'a': 'eeee'}, md5('eeee').digest() + 'eeee')
+                       ({'a': 'eeee'}, sha1('eeee').digest() + 'eeee')
                        ])
 
     def test_no_conditionals_return_dicts(self):
@@ -629,10 +629,10 @@ class TestIndexCreatorRightInput:
         key_format =     32s
         hash_lim = 1
         make_key_value:
-        md5(str(md5(a))),None
+        sha1(str(sha1(a))),None
         """
 
-        simple_compare(s, [({'a': 'a', 'b': 4}, (md5(str(md5('a').digest())).digest(), None))
+        simple_compare(s, [({'a': 'a', 'b': 4}, (sha1(str(sha1('a').digest())).digest(), None))
                            ],
                        [(5, 5),
                       ("aaa", "aaa"),
@@ -645,18 +645,18 @@ class TestIndexCreatorRightInput:
         key_format =     32s
         hash_lim = 1
         make_key_value:
-        b == 1: md5(str(b)),None
-        len(a) > 2: md5(a),None
+        b == 1: sha1(str(b)),None
+        len(a) > 2: sha1(a),None
         a,None
         """
 
         simple_compare(
-            s2, [({'a': 'a', 'b': 1}, (md5(str(1)).digest(), None)),
+            s2, [({'a': 'a', 'b': 1}, (sha1(str(1)).digest(), None)),
                  ({'a': 'a', 'b': 4}, ('a', None)),
                  ({'a': 'eee', 'b':
-                   1}, (md5(str(1)).digest(), None)),
+                   1}, (sha1(str(1)).digest(), None)),
                  ({'a': 'eee', 'b':
-                   3}, (md5('eee').digest(), None))
+                   3}, (sha1('eee').digest(), None))
                          ],
             [(5, 5),
              ("aaa", "aaa"),
@@ -933,7 +933,7 @@ class TestIndexCreatorExceptions():
         type = HashIndex
         hash_lim = 1
         make_key_value:
-        md5(a)
+        sha1(a)
         """
         with raises(IndexCreatorValueException):
             p.parse(s3, 'TestIndex')
@@ -945,7 +945,7 @@ class TestIndexCreatorExceptions():
         type = HashIndex
         hash_lim = 1
         make_key_value:
-        md5(a),a
+        sha1(a),a
         make_key:
         0
         """
@@ -957,7 +957,7 @@ class TestIndexCreatorExceptions():
         type = HashIndex
         hash_lim = 1
         make_key_value:
-        md5(a),"aaa"
+        sha1(a),"aaa"
         make_key:
         0
         """
@@ -969,7 +969,7 @@ class TestIndexCreatorExceptions():
         type = HashIndex
         hash_lim = 1
         make_key_value:
-        md5(a),3
+        sha1(a),3
         make_key:
         0
         """
@@ -984,7 +984,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3:
-        md5(a),None
+        sha1(a),None
         make_key:
         0
         """
@@ -998,7 +998,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3:
-        md5(a),None
+        sha1(a),None
         make_key:
         0
         """
@@ -1015,7 +1015,7 @@ class TestIndexCreatorExceptions():
         a > 3:
         0
         make_key_value:
-        md5(a),a
+        sha1(a),a
         """
         with raises(IndexCreatorValueException):
             p.parse(s3, 'TestIndex')
@@ -1026,7 +1026,7 @@ class TestIndexCreatorExceptions():
         type = HashIndex
         hash_lim = 1
         make_key_value:
-        md5(a),None
+        sha1(a),None
         make_key:
         a>2:"""
         with raises(IndexCreatorValueException):
@@ -1040,7 +1040,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3: a,None,
-        md5(a),None
+        sha1(a),None
         make_key:
         0
         """
@@ -1054,7 +1054,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3: a,None
-        md5(a),None,
+        sha1(a),None,
         make_key:
         0
         """
@@ -1068,7 +1068,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3: a,None
-        md5(a),None
+        sha1(a),None
         make_key:
         0,
         """
@@ -1082,7 +1082,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         a > 3: a,None
-        md5(a),None
+        sha1(a),None
         make_key:
         ,
         """
@@ -1096,7 +1096,7 @@ class TestIndexCreatorExceptions():
         hash_lim = 1
         make_key_value:
         1,
-        md5(a),None
+        sha1(a),None
         make_key:
         0
         """

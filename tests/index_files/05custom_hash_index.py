@@ -8,7 +8,7 @@ import msgpack
 import struct
 import shutil
 
-from hashlib import md5
+from hashlib import sha1
 
 # custom db code start
 
