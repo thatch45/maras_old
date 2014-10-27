@@ -97,10 +97,13 @@ class Index(object):
     def _get_props(self):
         self.buckets.seek(0)
         raw_ind = self.buckets.read(self._start_ind)
-        pivot = raw_ind.find('\x00')
-        while raw_ind[pivot:] != '\x00' * (self._start_ind - pivot):
-            pivot += 1
-        return msgpack.loads(raw_ind[:pivot])
+        pivot = 1
+        while pivot < self._start_ind:
+            try:
+                return msgpack.loads(raw_ind[:pivot])
+            except Exception:
+                pivot += 1
+                continue
 
     def _fix_params(self):
         props = self._get_props()
