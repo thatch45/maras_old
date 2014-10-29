@@ -187,7 +187,7 @@ class Sha2TreeIndex(maras.tree_index.TreeBasedIndex):
     '''
     custom_header = 'import hashlib'
     def __init__(self, *args, **kwargs):
-        kwargs['key_format'] = '32s'
+        kwargs['key_format'] = '40s'
         maras.tree_index.TreeBasedIndex.__init__(self, *args, **kwargs)
 
     def make_key_value(self, data):
@@ -206,7 +206,7 @@ class Sha2HashIndex(maras.hash_index.HashIndex):
     '''
     custom_header = 'import hashlib'
     def __init__(self, *args, **kwargs):
-        kwargs['key_format'] = '32s'
+        kwargs['key_format'] = '40s'
         maras.hash_index.HashIndex.__init__(self, *args, **kwargs)
 
     def make_key_value(self, data):

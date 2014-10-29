@@ -22,7 +22,7 @@ from maras import rr_cache
 class CustomHashIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        kwargs['entry_line_format'] = '32sIIIcI'
+        kwargs['entry_line_format'] = '40sIIIcI'
         kwargs['hash_lim'] = 1
         super(CustomHashIndex, self).__init__(*args, **kwargs)
 

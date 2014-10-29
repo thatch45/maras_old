@@ -54,8 +54,8 @@ class IU_TreeBasedIndex(Index):
 
     custom_header = 'from maras.tree_index import TreeBasedIndex'
 
-    def __init__(self, db_path, name, key_format='32s', pointer_format='I',
-                 meta_format='32sIIc', node_capacity=10, storage_class=None):
+    def __init__(self, db_path, name, key_format='40s', pointer_format='I',
+                 meta_format='40sIIc', node_capacity=10, storage_class=None):
         if node_capacity < 3:
             raise NodeCapacityException
         super(IU_TreeBasedIndex, self).__init__(db_path, name)

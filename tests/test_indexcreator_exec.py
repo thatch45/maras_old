@@ -549,7 +549,7 @@ class TestIndexCreatorRightInput:
     def test_props(self, p):
         s = """
         type = HashIndex
-        key_format =     32s
+        key_format =     40s
         name = s
         hash_lim = 1
         make_key_value:
@@ -561,11 +561,11 @@ class TestIndexCreatorRightInput:
         exec n in globals()
         n = n.splitlines()[1][2:]
         assert globals()[n]('test', 'test').hash_lim == 1
-        assert globals()[n]('test', 'test').entry_struct.format[4:7] == '32s'
+        assert globals()[n]('test', 'test').entry_struct.format[4:7] == '40s'
 
         s2 = """
         type = HashIndex
-        key_format=32s
+        key_format=40s
         hash_lim=30 * (15+5) - 0
         name = s2
         make_key_value:
@@ -576,7 +576,7 @@ class TestIndexCreatorRightInput:
         exec n2 in globals()
         n2 = n2.splitlines()[1][2:]
         assert globals()[n2]('test', 'test').hash_lim == 600
-        assert globals()[n2]('test', 'test').entry_struct.format[4:7] == '32s'
+        assert globals()[n2]('test', 'test').entry_struct.format[4:7] == '40s'
 
         s3 = """
         name = s3
@@ -610,7 +610,7 @@ class TestIndexCreatorRightInput:
         s = """
         name = s
         type = HashIndex
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         0,None
@@ -626,7 +626,7 @@ class TestIndexCreatorRightInput:
         s = """
         name = s
         type = HashIndex
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         sha1(str(sha1(a))),None
@@ -642,7 +642,7 @@ class TestIndexCreatorRightInput:
         s2 = """
         name = s2
         type = HashIndex
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         b == 1: sha1(str(b)),None
@@ -666,7 +666,7 @@ class TestIndexCreatorRightInput:
         s3 = """
         name = s
         type = HashIndex
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         fix_r(a,5),None
@@ -686,7 +686,7 @@ class TestIndexCreatorRightInput:
 
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -703,7 +703,7 @@ class TestIndexCreatorRightInput:
 
         s1 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -721,7 +721,7 @@ class TestIndexCreatorRightInput:
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -828,7 +828,7 @@ class TestIndexCreatorExceptions():
         s = """
         type = HashIndex
         name = s
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
 
@@ -837,7 +837,7 @@ class TestIndexCreatorExceptions():
         s2 = """
         type = HashIndex
         name = s2
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         0
@@ -846,7 +846,7 @@ class TestIndexCreatorExceptions():
         s3 = """
         type = HashIndex
         name = s3
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
 
@@ -862,7 +862,7 @@ class TestIndexCreatorExceptions():
 
     def test_no_type(self, p):
         s = """
-        key_format =     32s
+        key_format =     40s
         name = s
         hash_lim = 1
         make_key_value:
@@ -876,13 +876,13 @@ class TestIndexCreatorExceptions():
     def test_no_make_key_value(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key:
         0
         """
         s2 = """
-        key_format =     32s
+        key_format =     40s
         name = s2
         hash_lim = 1
         """
@@ -893,7 +893,7 @@ class TestIndexCreatorExceptions():
 
     def test_no_name(self, p):
         s = """
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -941,7 +941,7 @@ class TestIndexCreatorExceptions():
     def test_wrong_2nd_ret_arg_of_mkv(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -953,7 +953,7 @@ class TestIndexCreatorExceptions():
             p.parse(s, 'TestIndex')
         s2 = """
         name = s2
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -965,7 +965,7 @@ class TestIndexCreatorExceptions():
             p.parse(s2)
         s3 = """
         name = s3
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -979,7 +979,7 @@ class TestIndexCreatorExceptions():
     def test_empty_return_with_condition(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -993,7 +993,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1007,7 +1007,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key:
@@ -1022,7 +1022,7 @@ class TestIndexCreatorExceptions():
 
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1035,7 +1035,7 @@ class TestIndexCreatorExceptions():
     def test_wrong_nr_of_args_to_ret(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1049,7 +1049,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1063,7 +1063,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1077,7 +1077,7 @@ class TestIndexCreatorExceptions():
 
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1091,7 +1091,7 @@ class TestIndexCreatorExceptions():
 
         s5 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1107,7 +1107,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1120,7 +1120,7 @@ class TestIndexCreatorExceptions():
 
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1133,7 +1133,7 @@ class TestIndexCreatorExceptions():
 
         s5 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1146,7 +1146,7 @@ class TestIndexCreatorExceptions():
 
         s6 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1159,7 +1159,7 @@ class TestIndexCreatorExceptions():
 
         s7 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1171,7 +1171,7 @@ class TestIndexCreatorExceptions():
 
         s8 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
 
@@ -1186,7 +1186,7 @@ class TestIndexCreatorExceptions():
     def test_no_operator_between(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1198,7 +1198,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1210,7 +1210,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1222,7 +1222,7 @@ class TestIndexCreatorExceptions():
 
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1234,7 +1234,7 @@ class TestIndexCreatorExceptions():
 
         s5 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1259,7 +1259,7 @@ class TestIndexCreatorExceptions():
     def test_too_much_colons(self, p):
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1270,7 +1270,7 @@ class TestIndexCreatorExceptions():
             p.parse(s, 'TestIndex')
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1282,7 +1282,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     : 32s
+        key_format =     : 40s
         type = HashIndex
         hash_lim = 1
         make_key_value:
@@ -1296,7 +1296,7 @@ class TestIndexCreatorExceptions():
 
         s = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         type = HashIndex
@@ -1310,7 +1310,7 @@ class TestIndexCreatorExceptions():
         s2 = """
         type = TreeBasedIndex
         name = s
-        key_format =     : 32s
+        key_format =     : 40s
         type = HashIndex
         hash_lim = 1
 
@@ -1322,7 +1322,7 @@ class TestIndexCreatorExceptions():
             p.parse(s2, 'TestIndex')
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         hash_lim = 1
         name: a
@@ -1334,7 +1334,7 @@ class TestIndexCreatorExceptions():
             p.parse(s3, 'TestIndex')
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         name = s
         hash_lim = 1
@@ -1348,7 +1348,7 @@ class TestIndexCreatorExceptions():
     def test_wrong_enclosures(self, p):
         s1 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         make_key_value:
         1<=(2)):1,None
@@ -1357,7 +1357,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1369,7 +1369,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1381,7 +1381,7 @@ class TestIndexCreatorExceptions():
 
         s4 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1393,7 +1393,7 @@ class TestIndexCreatorExceptions():
 
         s5 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1405,7 +1405,7 @@ class TestIndexCreatorExceptions():
 
         s7 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1417,7 +1417,7 @@ class TestIndexCreatorExceptions():
 
         s8 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
 
         make_key_value:
@@ -1445,7 +1445,7 @@ class TestIndexCreatorExceptions():
     def test_excessive_return(self, p):
         s1 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         make_key_value:
         1<=2:1,None
@@ -1459,7 +1459,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         make_key_value:
         1<=2:1,None
@@ -1473,7 +1473,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         type = HashIndex
         make_key_value:
         1<=2:1,None
@@ -1488,7 +1488,7 @@ class TestIndexCreatorExceptions():
     def test_wrong_properities(self, p):
         s1 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         node_capacity=100
         type = HashIndex
         make_key_value:
@@ -1501,7 +1501,7 @@ class TestIndexCreatorExceptions():
 
         s2 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         hash_lim=3
         type = TreeBasedIndex
         make_key_value:
@@ -1514,7 +1514,7 @@ class TestIndexCreatorExceptions():
 
         s3 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         aaa=100
         type = HashIndex
         make_key_value:
@@ -1528,7 +1528,7 @@ class TestIndexCreatorExceptions():
     def test_duplicate_props(self, p):
         s1 = """
         name = s
-        key_format =     32s
+        key_format =     40s
         key_format: 8
         type = HashIndex
         make_key_value:

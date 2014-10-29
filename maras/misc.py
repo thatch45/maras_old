@@ -17,6 +17,7 @@
 
 from random import getrandbits, randrange
 import uuid
+import binascii
 
 
 class NONE:
@@ -33,3 +34,8 @@ def random_hex_32():
 
 def random_hex_4(*args, **kwargs):
     return '%04x' % randrange(256 ** 2)
+
+
+def random_hex_40():
+    base = uuid.uuid4().bytes + uuid.uuid4().bytes
+    return binascii.hexlify(base)[:40]

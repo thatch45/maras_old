@@ -35,7 +35,7 @@ if menv.get('rlock_obj'):
     from maras import patch
     patch.patch_cache_rr(menv['rlock_obj'])
 from maras.rr_cache import cache1lvl
-from maras.misc import random_hex_32
+from maras.misc import random_hex_40
 
 
 class IU_HashIndex(Index):
@@ -50,7 +50,7 @@ class IU_HashIndex(Index):
             self,
             db_path,
             name,
-            entry_line_format='<32s{key}IIcI',
+            entry_line_format='<40s{key}IIcI',
             hash_lim=0xfffff,
             storage_class=None,
             key_format='c'):
@@ -61,7 +61,7 @@ class IU_HashIndex(Index):
         :param name: index name
         :type name: ascii string
         :param line_format: line format, `key_format` parameter value will replace `{key}` if present.
-        :type line_format: string (32s{key}IIcI by default) {doc_id}{hash_key}{start}{size}{status}{next}
+        :type line_format: string (40s{key}IIcI by default) {doc_id}{hash_key}{start}{size}{status}{next}
         :param hash_lim: maximum hash functon results (remember about birthday problem) count from 0
         :type hash_lim: integer
         :param storage_class: Storage class by default it will open standard :py:class:`maras.storage.Storage` (if string has to be accesible by globals()[storage_class])
@@ -523,13 +523,13 @@ class IU_UniqueHashIndex(IU_HashIndex):
     That design is because main index logic should be always in database not in custom user indexes.
     """
 
-    def __init__(self, db_path, name, entry_line_format="<32s8sIIcI", *args, **kwargs):
+    def __init__(self, db_path, name, entry_line_format="<40s8sIIcI", *args, **kwargs):
         if 'key' in kwargs:
             raise IndexPreconditionsException(
                 "UniqueHashIndex doesn't accept key parameter'")
         super(IU_UniqueHashIndex, self).__init__(db_path, name,
                                                  entry_line_format, *args, **kwargs)
-        self.create_key = random_hex_32  # : set the function to create random key when no _id given
+        self.create_key = random_hex_40  # : set the function to create random key when no _id given
         # self.entry_struct=struct.Struct(entry_line_format)
 
 #    @lfu_cache(100)
@@ -733,8 +733,8 @@ class IU_UniqueHashIndex(IU_HashIndex):
         except:
             raise IndexPreconditionsException(
                 "_id must be valid string/bytes object")
-        if len(_id) != 32:
-            raise IndexPreconditionsException("Invalid _id lenght")
+        if len(_id) != 40:
+            raise IndexPreconditionsException('Invalid _id length: {0} for id: {1}'.format(len(_id), _id))
         del data['_id']
         del data['_rev']
         return _id, data
@@ -764,10 +764,10 @@ class IU_UniqueHashIndex(IU_HashIndex):
 
 
 class DummyHashIndex(IU_HashIndex):
-    def __init__(self, db_path, name, entry_line_format="<32s4sIIcI", *args, **kwargs):
+    def __init__(self, db_path, name, entry_line_format="<40s4sIIcI", *args, **kwargs):
         super(DummyHashIndex, self).__init__(db_path, name,
                                              entry_line_format, *args, **kwargs)
-        self.create_key = random_hex_32  # : set the function to create random key when no _id given
+        self.create_key = random_hex_40  # : set the function to create random key when no _id given
         # self.entry_struct=struct.Struct(entry_line_format)
 
     def update(self, *args, **kwargs):

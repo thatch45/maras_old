@@ -110,7 +110,13 @@ class IU_Storage(object):
         # self.fsync()
 
     def data_from(self, data):
-        return msgpack.loads(data)
+        try:
+            return msgpack.loads(data)
+        except:
+            with open('/tmp/msgpack.p', 'w+b') as fp_:
+                fp_.write(data)
+            print(data)
+        raise
 
     def data_to(self, data):
         return msgpack.dumps(data)

@@ -67,7 +67,7 @@ class TestIndexCreatorWithDatabase:
         s = """
         type = HashIndex
         name = s
-        key_format =     32s
+        key_format =     40s
         hash_lim = 1
         make_key_value:
         0,None
@@ -80,7 +80,7 @@ class TestIndexCreatorWithDatabase:
         s1 = """
         type = TreeBasedIndex
         name = s1
-        key_format =     32s
+        key_format =     40s
         make_key_value:
         0,None
         make_key:

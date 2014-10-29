@@ -20,7 +20,7 @@ from maras.database import DatabaseException
 
 from maras.hash_index import HashIndex, UniqueHashIndex
 from maras.index import IndexException
-from maras.misc import random_hex_32
+from maras.misc import random_hex_40
 
 from maras import rr_cache
 
@@ -131,7 +131,7 @@ class HashIndexTests:
         db.add_index(UniqueHashIndex(db.path, 'id'), False)
         db.create()
 
-        doc = dict(a=1, _id=random_hex_32())
+        doc = dict(a=1, _id=random_hex_40())
         ins = db.insert(doc)
         assert ins['_id'] == doc["_id"]
         db.close()

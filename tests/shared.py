@@ -44,7 +44,7 @@ except ImportError:
 class CustomHashIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<40sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 1
         super(CustomHashIndex, self).__init__(*args, **kwargs)
@@ -66,7 +66,7 @@ class CustomHashIndex(HashIndex):
 class sha1Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<40s40sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(sha1Index, self).__init__(*args, **kwargs)
@@ -81,7 +81,7 @@ class sha1Index(HashIndex):
 class WithAIndex2(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<40s40sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
@@ -103,7 +103,7 @@ class WithAIndex2(HashIndex):
 class WithAIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32s32sIIcI'
+        # kwargs['entry_line_format'] = '<40s40sIIcI'
         kwargs['key_format'] = '16s'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
@@ -142,7 +142,7 @@ class Simple_TreeIndex(TreeBasedIndex):
 class WithRun_Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<40sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 4 * 1024
         super(WithRun_Index, self).__init__(*args, **kwargs)
@@ -174,7 +174,7 @@ class WithRun_Index(HashIndex):
 class WithRunEdit_Index(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        # kwargs['entry_line_format'] = '<32sIIIcI'
+        # kwargs['entry_line_format'] = '<40sIIIcI'
         kwargs['key_format'] = 'I'
         kwargs['hash_lim'] = 4 * 1024
         super(WithRunEdit_Index, self).__init__(*args, **kwargs)
@@ -1005,7 +1005,7 @@ class DB_Tests:
         class Indentedsha1Index(HashIndex):
 
             def __init__(self, *args, **kwargs):
-                # kwargs['entry_line_format'] = '<32s32sIIcI'
+                # kwargs['entry_line_format'] = '<40s40sIIcI'
                 kwargs['key_format'] = '16s'
                 kwargs['hash_lim'] = 4 * 1024
                 super(Indentedsha1Index, self).__init__(*args, **kwargs)

@@ -19,7 +19,7 @@ from hashlib import sha1
 class WithAIndex(HashIndex):
 
     def __init__(self, *args, **kwargs):
-        kwargs['entry_line_format'] = '<32s32sIIcI'
+        kwargs['entry_line_format'] = '<40s40sIIcI'
         kwargs['hash_lim'] = 4 * 1024
         super(WithAIndex, self).__init__(*args, **kwargs)
 
