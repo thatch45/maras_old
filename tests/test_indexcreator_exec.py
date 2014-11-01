@@ -26,11 +26,11 @@ from maras.hash_index import HashIndex
 from maras.tree_index import TreeBasedIndex
 from maras.tree_index import MultiTreeBasedIndex
 from maras.hash_index import MultiHashIndex
+import maras.misc
 from itertools import izip
 from hashlib import sha1
 from py.test import raises
 import os
-import uuid
 
 
 def pytest_funcarg__p(request):
@@ -40,7 +40,7 @@ def pytest_funcarg__p(request):
 
 def simple_compare(s, args_mkv, args_mk):
     p = Parser()
-    n = "_" + uuid.uuid4().hex
+    n = "_" + maras.misc.random_hex_40()
     exec p.parse(s, n)[1] in globals()
 
     # n2 = p.parse(s)
@@ -60,7 +60,7 @@ def simple_compare(s, args_mkv, args_mk):
 
 def simple_compare_without_order(s, args_mkv, args_mk):
     p = Parser()
-    n = "_" + uuid.uuid4().hex
+    n = "_" + maras.misc.random_hex_40()
     exec p.parse(s, n)[1] in globals()
 
     for a, o in args_mkv:

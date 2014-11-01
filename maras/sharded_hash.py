@@ -19,6 +19,7 @@
 from maras.hash_index import UniqueHashIndex, HashIndex
 from maras.sharded_index import ShardedIndex
 from maras.index import IndexPreconditionsException
+from maras.misc import random_hex_40
 
 from random import getrandbits
 import uuid
@@ -27,6 +28,7 @@ import uuid
 class IU_ShardedUniqueHashIndex(ShardedIndex):
 
     custom_header = """import uuid
+from maras.misc import random_hex_40
 from random import getrandbits
 from maras.sharded_index import ShardedIndex
 """
@@ -62,7 +64,7 @@ from maras.sharded_index import ShardedIndex
             delattr(db_obj, "_insert_id_index_orig")
 
     def create_key(self):
-        h = uuid.UUID(int=getrandbits(128), version=4).hex
+        h = random_hex_40()
         trg = self.last_used + 1
         if trg >= self.sh_nums:
             trg = 0

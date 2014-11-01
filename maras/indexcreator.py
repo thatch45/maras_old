@@ -19,7 +19,8 @@
 import re
 import tokenize
 import token
-import uuid
+
+import maras.misc
 
 
 class IndexCreatorException(Exception):
@@ -47,7 +48,7 @@ class Parser(object):
 
     def parse(self, data, name=None):
         if not name:
-            self.name = "_" + uuid.uuid4().hex
+            self.name = "_" + maras.misc.random_hex_40()
         else:
             self.name = name
 

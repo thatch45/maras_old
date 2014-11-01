@@ -15,8 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from random import getrandbits, randrange
-import uuid
+import os
 import binascii
 
 
@@ -29,13 +28,12 @@ class NONE:
 
 
 def random_hex_32():
-    return uuid.UUID(int=getrandbits(128), version=4).hex
+    return binascii.hexlify(os.urandom(16))
 
 
 def random_hex_4(*args, **kwargs):
-    return '%04x' % randrange(256 ** 2)
+    return binascii.hexlify(os.urandom(2))
 
 
 def random_hex_40():
-    base = uuid.uuid4().bytes + uuid.uuid4().bytes
-    return binascii.hexlify(base)[:40]
+    return binascii.hexlify(os.urandom(20))
